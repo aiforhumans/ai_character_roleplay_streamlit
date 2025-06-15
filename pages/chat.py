@@ -6,6 +6,7 @@ from memory_manager import (
     load_persona_history,
     save_persona_history,
 )
+from memory_models import ChatHistory, ChatMessage
 
 
 chat_engine = ChatEngine()
@@ -41,43 +42,44 @@ def chat_page():
     if st.session_state.get("persona_label") != persona_label:
         st.session_state["persona_label"] = persona_label
         st.session_state["persona_path"] = persona_path
-        st.session_state["messages"] = load_persona_history(persona_label)
+        st.session_state["history"] = load_persona_history(persona_label)
 
     system_prompt = build_system_prompt(persona_path)
 
     if st.sidebar.button("\U0001F4BE Save Chat"):
-        save_persona_history(persona_label, st.session_state.get("messages", []))
+        save_persona_history(persona_label, st.session_state.get("history", ChatHistory()))
 
     if st.sidebar.button("\U0001F4C2 Load Chat"):
-        st.session_state["messages"] = load_persona_history(persona_label)
+        st.session_state["history"] = load_persona_history(persona_label)
         st.rerun()
 
     if st.sidebar.button("\U0001F5D1\ufe0f Clear Chat"):
-        st.session_state["messages"] = []
-        save_persona_history(persona_label, [])
+        st.session_state["history"] = ChatHistory()
+        save_persona_history(persona_label, st.session_state["history"])
         st.rerun()
 
-    st.session_state.setdefault("messages", [])
+    st.session_state.setdefault("history", ChatHistory())
+    history: ChatHistory = st.session_state["history"]
 
-    if not st.session_state["messages"] or st.session_state["messages"][0]["role"] != "system":
-        st.session_state["messages"].insert(0, {"role": "system", "content": system_prompt})
+    if not history.messages or history.messages[0].role != "system":
+        history.messages.insert(0, ChatMessage(role="system", content=system_prompt))
     else:
-        st.session_state["messages"][0]["content"] = system_prompt
+        history.messages[0].content = system_prompt
 
-    for msg in st.session_state["messages"]:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+    for msg in history.messages:
+        with st.chat_message(msg.role):
+            st.markdown(msg.content)
 
     if prompt := st.chat_input("What would you like to ask?"):
         st.chat_message("user").markdown(prompt)
-        st.session_state["messages"].append({"role": "user", "content": prompt})
+        history.add_message(ChatMessage(role="user", content=prompt))
 
         with st.chat_message("assistant"):
             response_box = st.empty()
             full_response = ""
             try:
                 for chunk in chat_engine.stream_chat(
-                    st.session_state["messages"],
+                    history.to_openai(),
                     model_id,
                     temperature,
                     top_p,
@@ -89,16 +91,16 @@ def chat_page():
                 st.error(f"Error during model response: {e}")
                 full_response = "\u26a0\ufe0f Error occurred while generating response."
 
-        st.session_state["messages"].append({"role": "assistant", "content": full_response})
-        save_persona_history(persona_label, st.session_state["messages"])
+        history.add_message(ChatMessage(role="assistant", content=full_response))
+        save_persona_history(persona_label, history)
         st.markdown(
             "<script>window.scrollTo(0,document.body.scrollHeight);</script>",
             unsafe_allow_html=True,
         )
 
-    def estimate_tokens(messages):
-        return sum(len(msg["content"].split()) for msg in messages) * 1.3
+    def estimate_tokens(hist: ChatHistory):
+        return sum(len(m.content.split()) for m in hist.messages) * 1.3
 
     st.sidebar.markdown(
-        f"\U0001F9EE Estimated Tokens: `{int(estimate_tokens(st.session_state['messages']))}`"
+        f"\U0001F9EE Estimated Tokens: `{int(estimate_tokens(history))}`"
     )
