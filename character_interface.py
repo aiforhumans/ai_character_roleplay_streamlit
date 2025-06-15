@@ -1,41 +1,42 @@
+import os
+import json
 import streamlit as st
 from persona_model import Persona
-import json
-import os
 
 
 def show_character_editor():
-    st.header("Character Traits")
+    """UI for creating and saving personas."""
 
-    name = st.text_input("Name", "Laura")
-    age = st.slider("Age", 18, 100, 50)
-    gender = st.selectbox("Gender", ["Female", "Male", "Other"])
-    species = st.text_input("Species", "Human")
-    personality = st.text_area("Personality", "Empathetic and warm")
-    tone = st.selectbox("Tone", ["Formal", "Casual", "Playful"])
-    quirks = st.text_area("Quirks", "Taps fingers when thinking")
-    communication_style = st.selectbox(
-        "Communication Style",
-        ["Direct", "Subtle", "Flowery"],
+    st.header("Define Persona")
+
+    who = st.text_input("Who to be (role or character)", "Aiden the Mentor")
+    how = st.text_area("How to speak (tone, style)", "Wise and encouraging")
+    why = st.text_area(
+        "Why it's here (purpose or objective)",
+        "Provide thoughtful advice and encourage personal growth",
     )
-    emotional_depth = st.slider("Emotional Depth", 1, 10, 7)
+    relationship = st.text_input(
+        "Relationship to the user (friend, family, etc.)",
+        "mentor",
+    )
+    rules = st.text_area(
+        "Rules (behaviour guidelines for the AI)",
+        "Stay positive and support the user at all times.",
+    )
 
     if st.button("Save Persona"):
         persona = Persona(
-            name=name,
-            age=age,
-            gender=gender,
-            species=species,
-            personality=personality,
-            tone=tone,
-            quirks=quirks,
-            communication_style=communication_style,
-            emotional_depth=emotional_depth
+            who=who,
+            how=how,
+            why=why,
+            relationship=relationship,
+            rules=rules,
         )
         os.makedirs("data/saved_personas", exist_ok=True)
-        with open(f"data/saved_personas/{name}.json", "w") as f:
+        filename = f"{who.replace(' ', '_').lower()}.json"
+        with open(os.path.join("data/saved_personas", filename), "w") as f:
             json.dump(persona.dict(), f, indent=2)
-        st.success(f"Saved {name}.json")
+        st.success(f"Saved {filename}")
         return persona
 
     return None
