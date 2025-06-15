@@ -2,9 +2,10 @@
 
 A fully local roleplay app powered by LM Studio. Define a character and chat with them using local LLMs.
 
-- Persona builder with sliders and text fields (accessible from the sidebar)
+- Persona builder with sliders and text fields (via the navigation menu)
 - Streamlit-based chat UI
 - Local LLM connection via LM Studio (OpenAI-compatible API)
+- Multipage navigation with `st.navigation`
 
 ## 🚀 How to Run
 
