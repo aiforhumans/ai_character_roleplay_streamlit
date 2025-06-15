@@ -24,3 +24,4 @@ Make sure LM Studio is running at `http://localhost:1234` with a supported model
 - `persona_model.py`: Pydantic schema
 - `utils.py`: Prompt builder
 - `memory_manager.py`: JSON storage
+- `data/personas/default.yaml`: Example persona loaded for system prompts

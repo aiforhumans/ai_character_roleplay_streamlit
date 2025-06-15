@@ -1,3 +1,5 @@
 streamlit
 openai
 pydantic
+jinja2
+pyyaml
