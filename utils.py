@@ -1,5 +1,8 @@
+
+
 def build_system_prompt(persona):
-    return f"""
+    return (
+        f"""
 You are {persona.name}, a {persona.age}-year-old {persona.species}.
 Traits:
 - Personality: {persona.personality}
@@ -10,3 +13,4 @@ Traits:
 
 Speak naturally and stay in character at all times.
 """
+    )

@@ -21,7 +21,11 @@ except Exception:
     available_models = ["gpt-3.5-turbo"]
     st.sidebar.warning("Could not fetch models dynamically. Using fallback.")
 
-model_id = st.sidebar.selectbox("Choose your model", available_models, index=0)
+model_id = st.sidebar.selectbox(
+    "Choose your model",
+    available_models,
+    index=0,
+)
 st.session_state.setdefault("openai_model", model_id)
 
 # Generation Parameters
@@ -30,7 +34,10 @@ top_p = st.sidebar.slider("🧠 Top-p", 0.0, 1.0, 1.0, 0.05)
 max_tokens = st.sidebar.slider("📏 Max Tokens", 64, 2048, 512, 64)
 
 # Personality Presets
-persona = st.sidebar.selectbox("🤖 Personality", ["Default", "Sassy", "Wise Mentor"])
+persona = st.sidebar.selectbox(
+    "🤖 Personality",
+    ["Default", "Sassy", "Wise Mentor"],
+)
 prompts = {
     "Default": "You are a helpful assistant.",
     "Sassy": "You're witty, sarcastic, and have a sharp tongue.",
@@ -57,7 +64,10 @@ st.session_state.setdefault("messages", [])
 
 # Insert system prompt if not already present
 if not any(m["role"] == "system" for m in st.session_state["messages"]):
-    st.session_state["messages"].insert(0, {"role": "system", "content": system_prompt})
+    st.session_state["messages"].insert(
+        0,
+        {"role": "system", "content": system_prompt},
+    )
 
 # --- Chat History Display ---
 for msg in st.session_state["messages"]:
@@ -91,13 +101,24 @@ if prompt := st.chat_input("What would you like to ask?"):
             st.error(f"Error during model response: {e}")
             full_response = "⚠️ Error occurred while generating response."
 
-    st.session_state["messages"].append({"role": "assistant", "content": full_response})
+    st.session_state["messages"].append(
+        {"role": "assistant", "content": full_response},
+    )
 
     # Auto-scroll to bottom (visual aid)
-    st.markdown("<script>window.scrollTo(0,document.body.scrollHeight);</script>", unsafe_allow_html=True)
+    st.markdown(
+        "<script>window.scrollTo(0,document.body.scrollHeight);</script>",
+        unsafe_allow_html=True,
+    )
 
 # --- Token Estimate ---
+
+
 def estimate_tokens(messages):
     return sum(len(msg["content"].split()) for msg in messages) * 1.3
 
-st.sidebar.markdown(f"🧮 Estimated Tokens: `{int(estimate_tokens(st.session_state['messages']))}`")
+
+st.sidebar.markdown(
+    f"🧮 Estimated Tokens: `"
+    f"{int(estimate_tokens(st.session_state['messages']))}`"
+)
