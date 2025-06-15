@@ -22,7 +22,8 @@ Make sure LM Studio is running at `http://localhost:1234` with a supported model
 - `character_interface.py`: Trait editor
 - `chat_engine.py`: Wrapper around the OpenAI client
 - `pages/`: Streamlit page modules
-- `persona_model.py`: Pydantic schema
-- `utils.py`: Prompt builder
-- `memory_manager.py`: JSON storage
+- `persona_model.py`: Pydantic schema for character sheets
+- `memory_models.py`: Chat message and history models using Pydantic
+- `utils.py`: Prompt builder that renders validated personas
+- `memory_manager.py`: JSON storage backed by `ChatHistory`
 - `data/personas/default.yaml`: Example persona loaded for system prompts

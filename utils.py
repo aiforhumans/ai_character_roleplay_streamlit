@@ -3,14 +3,17 @@
 import json
 import yaml
 from jinja2 import Template
+from persona_model import Persona
 
 
-def load_persona(file_path):
+def load_persona(file_path: str) -> Persona:
     """Load persona data from a YAML or JSON file."""
     with open(file_path, "r") as f:
         if file_path.endswith(".json"):
-            return json.load(f)
-        return yaml.safe_load(f)
+            data = json.load(f)
+        else:
+            data = yaml.safe_load(f)
+    return Persona(**data)
 
 
 SYSTEM_TEMPLATE = Template(
@@ -32,7 +35,7 @@ Stay in character and respond accordingly.
 )
 
 
-def build_system_prompt(file_path):
+def build_system_prompt(file_path: str) -> str:
     """Build a system prompt from a persona file using Jinja."""
-    data = load_persona(file_path)
-    return SYSTEM_TEMPLATE.render(**data)
+    persona = load_persona(file_path)
+    return SYSTEM_TEMPLATE.render(**persona.model_dump())

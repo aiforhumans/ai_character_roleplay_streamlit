@@ -32,12 +32,17 @@ class ChatEngine:
             if content is not None:
                 yield content
 
-    def chat_with_history(self, persona_file, history, user_input, model="gpt-3.5-turbo"):
+    def chat_with_history(self, persona_file: str, history, user_input: str, model: str = "gpt-3.5-turbo"):
         """Send chat completion request using stored history."""
-        messages = [{"role": "system", "content": build_system_prompt(persona_file)}]
-        for entry in history:
-            messages.append({"role": "user", "content": entry["user"]})
-            messages.append({"role": "assistant", "content": entry["ai"]})
+        if hasattr(history, "to_openai"):
+            messages = history.to_openai()
+        else:
+            messages = history
+        system_msg = {"role": "system", "content": build_system_prompt(persona_file)}
+        if not messages or messages[0]["role"] != "system":
+            messages.insert(0, system_msg)
+        else:
+            messages[0]["content"] = system_msg["content"]
         messages.append({"role": "user", "content": user_input})
 
         completion = self.client.chat.completions.create(
