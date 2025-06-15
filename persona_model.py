@@ -1,13 +1,14 @@
+"""Pydantic schema for persona files."""
+
 from pydantic import BaseModel
 
 
 class Persona(BaseModel):
-    name: str
-    age: int
-    gender: str
-    species: str
-    personality: str
-    tone: str
-    quirks: str
-    emotional_depth: int
-    communication_style: str
+    """Simplified persona definition used by the builder and chat UI."""
+
+    who: str
+    how: str
+    why: str
+    relationship: str
+    rules: str
+

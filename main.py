@@ -1,8 +1,9 @@
+import json
+import os
 import streamlit as st
 from openai import OpenAI
 from character_interface import show_character_editor
-import json
-import os
+from utils import build_system_prompt
 
 # Initialize OpenAI client for LM Studio
 client = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio")
@@ -39,15 +40,21 @@ def chat_page():
     top_p = st.sidebar.slider("\U0001F9E0 Top-p", 0.0, 1.0, 1.0, 0.05)
     max_tokens = st.sidebar.slider("\U0001F4CF Max Tokens", 64, 2048, 512, 64)
 
-    persona = st.sidebar.selectbox(
-        "\U0001F916 Personality", ["Default", "Sassy", "Wise Mentor"]
-    )
-    prompts = {
-        "Default": "You are a helpful assistant.",
-        "Sassy": "You're witty, sarcastic, and have a sharp tongue.",
-        "Wise Mentor": "You are wise and calm, guiding the user with experience.",
-    }
-    system_prompt = prompts[persona]
+    persona_dir = "data/saved_personas"
+    options = {"default": "data/personas/default.yaml"}
+    if os.path.isdir(persona_dir):
+        for fname in os.listdir(persona_dir):
+            if fname.endswith((".json", ".yaml", ".yml")):
+                options[fname] = os.path.join(persona_dir, fname)
+
+    persona_label = st.sidebar.selectbox("\U0001F916 Persona", list(options.keys()))
+    persona_path = options[persona_label]
+
+    if st.session_state.get("persona_path") != persona_path:
+        st.session_state["persona_path"] = persona_path
+        st.session_state["messages"] = []
+
+    system_prompt = build_system_prompt(persona_path)
 
     if st.sidebar.button("\U0001F4BE Save Chat"):
         with open("chat_history.json", "w") as f:

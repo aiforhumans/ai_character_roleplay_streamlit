@@ -15,15 +15,11 @@ def load_persona(file_path):
 
 SYSTEM_TEMPLATE = Template(
     """
-You are {{ name }}.
-Backstory: {{ backstory }}
-Tone: {{ tone }}
-Objectives:
-{% for obj in objectives %}- {{ obj }}
-{% endfor %}
-Sample Dialogues:
-{% for line in sample_dialogues %}- {{ line }}
-{% endfor %}
+You are {{ who }}.
+Relationship to user: {{ relationship }}
+Speak in this style: {{ how }}
+Your purpose: {{ why }}
+Rules:\n{{ rules }}
 
 Stay in character and respond accordingly.
 """
