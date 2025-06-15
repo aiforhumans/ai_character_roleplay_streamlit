@@ -1,5 +1,6 @@
 import streamlit as st
 from openai import OpenAI
+from character_interface import show_character_editor
 import json
 import os
 
@@ -58,6 +59,10 @@ if st.sidebar.button("📂 Load Chat") and os.path.exists("chat_history.json"):
 if st.sidebar.button("🗑️ Clear Chat"):
     st.session_state["messages"] = []
     st.rerun()
+
+# Character Editor in sidebar
+with st.sidebar.expander("📝 Character Editor"):
+    show_character_editor()
 
 # --- Session State Init ---
 st.session_state.setdefault("messages", [])
