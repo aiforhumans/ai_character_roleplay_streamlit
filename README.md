@@ -20,7 +20,8 @@ Make sure LM Studio is running at `http://localhost:1234` with a supported model
 
 - `main.py`: Streamlit app entry point
 - `character_interface.py`: Trait editor
-- `chat_engine.py`: Chat logic using local LLM
+- `chat_engine.py`: Wrapper around the OpenAI client
+- `pages/`: Streamlit page modules
 - `persona_model.py`: Pydantic schema
 - `utils.py`: Prompt builder
 - `memory_manager.py`: JSON storage
