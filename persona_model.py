@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class Persona(BaseModel):
     name: str
     age: int

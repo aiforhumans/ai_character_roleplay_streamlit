@@ -3,6 +3,7 @@ from persona_model import Persona
 import json
 import os
 
+
 def show_character_editor():
     st.header("Character Traits")
 
@@ -13,7 +14,10 @@ def show_character_editor():
     personality = st.text_area("Personality", "Empathetic and warm")
     tone = st.selectbox("Tone", ["Formal", "Casual", "Playful"])
     quirks = st.text_area("Quirks", "Taps fingers when thinking")
-    communication_style = st.selectbox("Communication Style", ["Direct", "Subtle", "Flowery"])
+    communication_style = st.selectbox(
+        "Communication Style",
+        ["Direct", "Subtle", "Flowery"],
+    )
     emotional_depth = st.slider("Emotional Depth", 1, 10, 7)
 
     if st.button("Save Persona"):
