@@ -1,16 +1,36 @@
 
 
-def build_system_prompt(persona):
-    return (
-        f"""
-You are {persona.name}, a {persona.age}-year-old {persona.species}.
-Traits:
-- Personality: {persona.personality}
-- Tone: {persona.tone}
-- Quirks: {persona.quirks}
-- Communication Style: {persona.communication_style}
-- Emotional Depth: {persona.emotional_depth}
+import json
+import yaml
+from jinja2 import Template
 
-Speak naturally and stay in character at all times.
+
+def load_persona(file_path):
+    """Load persona data from a YAML or JSON file."""
+    with open(file_path, "r") as f:
+        if file_path.endswith(".json"):
+            return json.load(f)
+        return yaml.safe_load(f)
+
+
+SYSTEM_TEMPLATE = Template(
+    """
+You are {{ name }}.
+Backstory: {{ backstory }}
+Tone: {{ tone }}
+Objectives:
+{% for obj in objectives %}- {{ obj }}
+{% endfor %}
+Sample Dialogues:
+{% for line in sample_dialogues %}- {{ line }}
+{% endfor %}
+
+Stay in character and respond accordingly.
 """
-    )
+)
+
+
+def build_system_prompt(file_path):
+    """Build a system prompt from a persona file using Jinja."""
+    data = load_persona(file_path)
+    return SYSTEM_TEMPLATE.render(**data)
